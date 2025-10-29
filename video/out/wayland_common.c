@@ -308,6 +308,7 @@ struct vo_wayland_preferred_description_info {
     float ref_luma;
     void *icc_file;
     uint32_t icc_size;
+    float reference_luminance;
 };
 
 static bool single_output_spanned(struct vo_wayland_state *wl);
@@ -2259,7 +2260,7 @@ static void info_target_luminance(void *data, struct wp_image_description_info_v
     if (!wd->is_parametric)
         return;
     wd->csp.hdr.min_luma = (float)min_lum / WAYLAND_MIN_LUM_FACTOR;
-    wd->csp.hdr.max_luma = (float)max_lum;
+    wd->csp.hdr.max_luma = (float)max_lum * (203.0/(float)wd->ref_luma);
 }
 
 static void info_target_max_cll(void *data, struct wp_image_description_info_v1 *image_description_info,
@@ -2268,7 +2269,7 @@ static void info_target_max_cll(void *data, struct wp_image_description_info_v1 
     struct vo_wayland_preferred_description_info *wd = data;
     if (!wd->is_parametric)
         return;
-    wd->csp.hdr.max_cll = (float)max_cll;
+    wd->csp.hdr.max_cll = (float)max_cll * (203.0/(float)wd->ref_luma);
 }
 
 static void info_target_max_fall(void *data, struct wp_image_description_info_v1 *image_description_info,
